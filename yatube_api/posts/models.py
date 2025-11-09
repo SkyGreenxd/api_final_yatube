@@ -5,9 +5,9 @@ User = get_user_model()
 
 
 class Group(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    description = models.TextField()
+    title = models.CharField(max_length=200, verbose_name='Заголовок')
+    slug = models.SlugField(unique=True, verbose_name='индекс')
+    description = models.TextField(verbose_name='Описание')
 
     def __str__(self):
         return self.title
@@ -15,13 +15,26 @@ class Group(models.Model):
 
 class Post(models.Model):
     text = models.TextField()
-    pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='posts'
+    )
     image = models.ImageField(
-        upload_to="posts/", null=True, blank=True
-    )  # поле для картинки
+        upload_to='posts/',
+        null=True,
+        blank=True
+    )
     group = models.ForeignKey(
-        Group, on_delete=models.SET_NULL, related_name="posts", blank=True, null=True
+        Group,
+        on_delete=models.SET_NULL,
+        related_name='posts',
+        blank=True,
+        null=True
     )
 
     def __str__(self):
@@ -29,29 +42,42 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
     text = models.TextField()
-    created = models.DateTimeField("Дата добавления", auto_now_add=True, db_index=True)
+    created = models.DateTimeField(
+        'Дата добавления',
+        auto_now_add=True,
+        db_index=True
+    )
 
 
 class Follow(models.Model):
-    """Модель подписок."""
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="follower",
-        verbose_name="Пользователь",
+        related_name='follower',
+        verbose_name='Пользователь',
     )
     following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="following",
-        verbose_name="Автор",
+        related_name='following',
+        verbose_name='Автор',
     )
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "following"], name="unique_follow")
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_follow'
+            )
         ]
